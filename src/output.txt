@@ -1,0 +1,25 @@
+Copyright @2019-2020 Heltec Automation.All rights reserved.
+Adafruit SI1145 lux reading demo.
+Si1145: partID=0x45 revID=0x0 seqID=0x8
+Calibration parameters is empty! Used default calibration values.
+OK!
+===================
+vis=4 ir=5 gain Vis=0x7 Ir=0x7
+Got from ADC: Visible=721.00 IR=14593.00 UVindx=0.01 Temp=258.00 ref=256.00
+Real: Visible=3.63 IR=112.01 lux=10.69 luxir=45.90
+===================
+vis=4 ir=5 gain Vis=0x7 Ir=0x7
+Got from ADC: Visible=744.00 IR=15536.00 UVindx=0.01 Temp=256.00 ref=256.00
+Real: Visible=3.81 IR=119.37 lux=11.08 luxir=48.92
+===================
+vis=5 ir=6 gain Vis=0x7 Ir=0x7
+Got from ADC: Visible=752.00 IR=15554.00 UVindx=0.02 Temp=255.00 ref=255.00
+Real: Visible=3.87 IR=119.52 lux=11.40 luxir=48.98
+===================
+vis=5 ir=6 gain Vis=0x7 Ir=0x7
+Got from ADC: Visible=765.00 IR=15676.00 UVindx=0.02 Temp=256.00 ref=256.00
+Real: Visible=3.98 IR=120.47 lux=11.88 luxir=49.37
+===================
+vis=6 ir=6 gain Vis=0x7 Ir=0x7
+Got from ADC: Visible=766.00 IR=15674.00 UVindx=0.02 Temp=254.00 ref=256.00
+Real: Visible=3.98 IR=120.45 lux=11.92 luxir=49.37
