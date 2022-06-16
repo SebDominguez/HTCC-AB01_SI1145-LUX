@@ -18,6 +18,9 @@
 #include <Wire.h>
 #include "Adafruit_SI1145.h"
 
+#define SDAPIN   4
+#define CLKPIN   5
+
 #define SF(x) (String(x))
 
 Adafruit_SI1145 si = Adafruit_SI1145();
@@ -74,51 +77,52 @@ bool SensorInit(){
 }
 
 void i2cInit() {
-  pinMode(SDA, INPUT_PULLUP);
-  pinMode(SCL, INPUT_PULLUP);
+  pinMode(SDAPIN, INPUT_PULLUP);
+  pinMode(CLKPIN, INPUT_PULLUP);
   delay(200);
-  bool isok = digitalRead(SDA) && digitalRead(SCL);
+  bool isok = digitalRead(SDAPIN) && digitalRead(CLKPIN);
   if (!isok) {
     Serial.println(F("I2C bus recovery..."));
     delay(500);
     //try i2c bus recovery at 100kHz = 5uS high, 5uS low
-    pinMode(SDA, OUTPUT);//keeping SDA high during recovery
-    pinMode(SCL, OUTPUT);
-    digitalWrite(SDA, HIGH);
-    digitalWrite(SCL, HIGH);
+    pinMode(SDAPIN, OUTPUT_OPEN_DRAIN);//keeping SDA high during recovery
+    pinMode(CLKPIN, OUTPUT_OPEN_DRAIN);
+    digitalWrite(SDAPIN, HIGH);
+    digitalWrite(CLKPIN, HIGH);
 
     for (int i = 0; i < 10; i++) { //9nth cycle acts as NACK
-      digitalWrite(SCL, HIGH);
+      digitalWrite(CLKPIN, HIGH);
       delayMicroseconds(5);
-      digitalWrite(SCL, LOW);
+      digitalWrite(CLKPIN, LOW);
       delayMicroseconds(5);
     }
 
     //a STOP signal (SDA from low to high while CLK is high)
-    digitalWrite(SDA, LOW);
+    digitalWrite(SDAPIN, LOW);
     delayMicroseconds(5);
-    digitalWrite(SCL, HIGH);
+    digitalWrite(CLKPIN, HIGH);
     delayMicroseconds(2);
-    digitalWrite(SDA, HIGH);
+    digitalWrite(SDAPIN, HIGH);
     delayMicroseconds(2);
     //bus status is now : FREE
 
     //return to power up mode
-    pinMode(SDA, INPUT_PULLUP);
-    pinMode(SCL, INPUT_PULLUP);
+    pinMode(SDAPIN, INPUT_PULLUP);
+    pinMode(CLKPIN, INPUT_PULLUP);
     delay(500);
 
-    isok = digitalRead(SDA) && digitalRead(SCL);
-    if (!digitalRead(SDA))
+    isok = digitalRead(SDAPIN) && digitalRead(CLKPIN);
+    if (!digitalRead(SDAPIN))
       Serial.println(F("I2C bus recovery  error: SDA still LOW."));
-    if (!digitalRead(SCL))
+    if (!digitalRead(CLKPIN))
       Serial.println(F("I2C bus recovery error: CLK still LOW."));
 
     if (isok)
       Serial.println(F("I2C bus recovery complete."));
   }
 
-  Wire.begin(SDA, SCL);
+  Wire.pins(SDAPIN, CLKPIN);
+  Wire.begin(SDAPIN, CLKPIN);
 }
 
 void setup() {
@@ -135,6 +139,9 @@ void setup() {
 }
 
 bool ExecMeasurementCycle(uint16_t *gainVis, uint16_t *gainIR, double *uv) {
+  *gainVis = 0x8000;
+  *gainIR = 0x8000;
+  *uv = 0;
   si.getLastError();
 
   si.setVisibleGain(*gainVis);
@@ -213,11 +220,8 @@ bool ExecMeasurementCycle(uint16_t *gainVis, uint16_t *gainIR, double *uv) {
 void loop() {
   Serial.println("===================");
 
-  uint16_t gainVis = 0x6;
-  uint16_t gainIR = 0x6;
-
-  Serial.println(SF("gainVis=0x") + String(gainVis, HEX) + SF(" gainIr=0x") + String(gainIR, HEX));
-
+  uint16_t gainVis = 0x8000;
+  uint16_t gainIR = 0x8000;
   double uv = 0; // calc UV in ExecMeasurementCycle() according to the datasheet
 
   // if we can do measurement (dont have i2c error)
